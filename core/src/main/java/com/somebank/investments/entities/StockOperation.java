@@ -1,55 +1,25 @@
 package com.somebank.investments.entities;
 
-import lombok.Builder;
-import lombok.Data;
+import com.somebank.investments.entities.strategy.OperationStrategy;
+import com.somebank.investments.entities.strategy.OperationStrategyFactory;
+import lombok.Getter;
 
-import static com.somebank.investments.entities.OperationType.BUY;
-import static com.somebank.investments.entities.OperationType.SELL;
-
-@Data
-@Builder
+@Getter
 public class StockOperation {
-    private static final Double THRESHOLD_SELLING_COST = 20000d;
-    private OperationType operation;
-    private Double unitCost;
-    private Integer quantity;
+    public static final Double THRESHOLD_SELLING_COST = 20000d;
+    private final OperationType operation;
+    private final Double unitCost;
+    private final Integer quantity;
+    private final OperationStrategy operationStrategy;
+
+    public StockOperation(OperationType operation, Double unitCost, Integer quantity) {
+        this.operation = operation;
+        this.unitCost = unitCost;
+        this.quantity = quantity;
+        this.operationStrategy = OperationStrategyFactory.createStrategy(operation);
+    }
 
     public OperationResult calculate(OperationResult previousResult) {
-        Double weightedAverageCost = 0d;
-        double tax = 0d;
-        double financialLoss = 0d;
-        int sharesQuantity = 0;
-        double profit;
-        double totalCost = unitCost * quantity;
-        if (BUY.equals(operation)) {
-            if (previousResult != null) {
-                sharesQuantity = quantity + previousResult.sharesQuantity();
-                weightedAverageCost = (previousResult.weightedAverageCost() * previousResult.sharesQuantity() + unitCost * quantity) / sharesQuantity;
-            } else {
-                sharesQuantity = quantity;
-                weightedAverageCost = unitCost;
-            }
-        } else if (SELL.equals(operation) && (previousResult != null)) {
-            sharesQuantity = previousResult.sharesQuantity() - quantity;
-            weightedAverageCost = previousResult.weightedAverageCost();
-            if (totalCost < THRESHOLD_SELLING_COST) {
-                tax = 0d;
-            }
-            if (weightedAverageCost > unitCost) {
-                financialLoss = previousResult.financialLoss() + quantity * weightedAverageCost - quantity * unitCost;
-            } else {
-                profit = quantity * unitCost - weightedAverageCost * quantity;
-                profit = profit - previousResult.financialLoss();
-                if (profit < 0) {
-                    financialLoss = profit * -1;
-                }
-            }
-        }
-        return new OperationResult(
-                weightedAverageCost,
-                tax,
-                financialLoss,
-                sharesQuantity
-        );
+        return operationStrategy.calculate(previousResult,this);
     }
 }

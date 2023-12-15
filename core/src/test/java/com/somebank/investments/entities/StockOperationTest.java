@@ -12,12 +12,7 @@ class StockOperationTest {
     @Test
     void executeSimpleBuyOperation_WithoutPreviousOperationResult() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(BUY)
-                .quantity(10000)
-                .unitCost(20d)
-                .build();
+        StockOperation operation = new StockOperation(BUY,20d,10000);
 
         // when
         OperationResult actualResult = operation.calculate(null);
@@ -35,13 +30,11 @@ class StockOperationTest {
     @Test
     void executeSimpleBuyOperation() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(BUY)
-                .quantity(5000)
-                .unitCost(25d)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                BUY,
+                25d,
+                5000
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
@@ -65,13 +58,11 @@ class StockOperationTest {
     @Test
     void executeProfitableSellOperationThatCostsLessThan20k() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(SELL)
-                .unitCost(15d)
-                .quantity(50)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                SELL,
+                15d,
+                50
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
@@ -95,13 +86,11 @@ class StockOperationTest {
     @Test
     void executeSellOperationAtALossThatCostsLessThan20k() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(SELL)
-                .unitCost(2d)
-                .quantity(5000)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                SELL,
+                2d,
+                5000
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
@@ -125,13 +114,11 @@ class StockOperationTest {
     @Test
     void executeProfitableSellOperationThatCostsLessThan20k_WithPreviousOperationInLoss() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(SELL)
-                .unitCost(20d)
-                .quantity(300)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                SELL,
+                20d,
+                300
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
@@ -155,13 +142,11 @@ class StockOperationTest {
     @Test
     void executeProfitableSellOperationThatCostsLessThan20k_WithPreviousOperationInLoss_ZeroingTheFinalLoss() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(SELL)
-                .unitCost(20d)
-                .quantity(300)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                SELL,
+                20d,
+                300
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
@@ -185,13 +170,11 @@ class StockOperationTest {
     @Test
     void executeSellOperationAtALossThatCostsLessThan20k_WithPreviousOperationInLoss() {
         // given
-        StockOperation operation = StockOperation
-                .builder()
-                .operation(SELL)
-                .unitCost(2d)
-                .quantity(5000)
-                .build();
-
+        StockOperation operation = new StockOperation(
+                SELL,
+                2d,
+                5000
+        );
         OperationResult previousResult = new OperationResult(
                 10d,
                 0d,
