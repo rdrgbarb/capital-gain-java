@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter
 public class StockOperation {
-    public static final Double THRESHOLD_SELLING_COST = 20000d;
     private final OperationType operation;
     private final Double unitCost;
     private final Integer quantity;
