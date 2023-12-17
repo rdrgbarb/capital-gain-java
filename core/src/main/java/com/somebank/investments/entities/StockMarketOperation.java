@@ -5,13 +5,13 @@ import com.somebank.investments.entities.strategy.OperationStrategyFactory;
 import lombok.Getter;
 
 @Getter
-public class StockOperation {
+public class StockMarketOperation {
     private final OperationType operation;
     private final Double unitCost;
     private final Integer quantity;
     private final OperationStrategy operationStrategy;
 
-    public StockOperation(OperationType operation, Double unitCost, Integer quantity) {
+    public StockMarketOperation(OperationType operation, Double unitCost, Integer quantity) {
         this.operation = operation;
         this.unitCost = unitCost;
         this.quantity = quantity;

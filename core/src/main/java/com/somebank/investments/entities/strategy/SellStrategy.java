@@ -1,36 +1,60 @@
 package com.somebank.investments.entities.strategy;
 
 import com.somebank.investments.entities.OperationResult;
-import com.somebank.investments.entities.StockOperation;
+import com.somebank.investments.entities.StockMarketOperation;
+import com.somebank.investments.entities.exceptions.InvalidPreviousResultException;
 
 public class SellStrategy implements OperationStrategy {
-    //    private static final Double THRESHOLD_SELLING_COST = 20000d;
+    private static final Double THRESHOLD_SELLING_COST = 20000d;
+    public static final double PAID_TAX_PERCENTAGE = 0.2;
+    private double totalCost;
+    private double unitCost;
+    private double weightedAverageCost;
+    private Integer quantity;
+    private Double profit;
+    private Double previousFinancialLoss;
+
     @Override
-    public OperationResult calculate(OperationResult previousResult, StockOperation stockOperation) {
-        if (previousResult == null) {
-            return new OperationResult(0d, 0d, 0d, 0);
+    public OperationResult calculate(OperationResult previousResult, StockMarketOperation stockMarketOperation) {
+        if (invalidPreviousResult(previousResult,stockMarketOperation)) {
+            throw new InvalidPreviousResultException();
         }
-
-        double financialLoss = 0d;
-        double weightedAverageCost = previousResult.weightedAverageCost();
-
-        if (weightedAverageCost > stockOperation.getUnitCost()) {
-            financialLoss = previousResult.financialLoss() + stockOperation.getQuantity() * weightedAverageCost - stockOperation.getQuantity() * stockOperation.getUnitCost();
-        } else {
-            double profit = stockOperation.getQuantity() * stockOperation.getUnitCost() - weightedAverageCost * stockOperation.getQuantity();
-            profit = profit - previousResult.financialLoss();
-            if (profit < 0) {
-                financialLoss = profit * -1;
-            }
-        }
-
-        int sharesQuantity = previousResult.sharesQuantity() - stockOperation.getQuantity();
+        this.unitCost = stockMarketOperation.getUnitCost();
+        this.quantity = stockMarketOperation.getQuantity();
+        this.totalCost = quantity * unitCost;
+        this.weightedAverageCost = previousResult.weightedAverageCost();
+        this.previousFinancialLoss = previousResult.financialLoss();
+        this.profit = totalCost - weightedAverageCost * quantity;
+        int remainingSharesQuantity = previousResult.sharesQuantity() - quantity;
 
         return new OperationResult(
                 weightedAverageCost,
-                0d,
-                financialLoss,
-                sharesQuantity
+                calculateTax(),
+                calculateFinancialLoss(),
+                remainingSharesQuantity
         );
+    }
+
+    private boolean invalidPreviousResult(OperationResult previousResult, StockMarketOperation stockMarketOperation) {
+        return previousResult==null || stockMarketOperation.getQuantity() > previousResult.sharesQuantity();
+    }
+
+    private Double calculateTax() {
+        return totalCost > THRESHOLD_SELLING_COST ? remainingProfitOrZero()*PAID_TAX_PERCENTAGE : 0d;
+    }
+
+    private double remainingProfitOrZero() {
+        return Math.max(this.profit - previousFinancialLoss,0d);
+    }
+
+    private Double calculateFinancialLoss() {
+        if (weightedAverageCost > unitCost) {
+            return previousFinancialLoss + quantity * weightedAverageCost - totalCost;
+        }
+        return remainingFinancialLossOrZero();
+    }
+
+    private double remainingFinancialLossOrZero() {
+        return Math.max(previousFinancialLoss - this.profit, 0d);
     }
 }

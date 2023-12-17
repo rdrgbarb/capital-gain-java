@@ -1,18 +1,18 @@
 package com.somebank.investments.entities.strategy;
 
 import com.somebank.investments.entities.OperationResult;
-import com.somebank.investments.entities.StockOperation;
+import com.somebank.investments.entities.StockMarketOperation;
 
 public class BuyStrategy implements OperationStrategy {
     @Override
-    public OperationResult calculate(OperationResult previousResult, StockOperation stockOperation) {
+    public OperationResult calculate(OperationResult previousResult, StockMarketOperation stockMarketOperation) {
         int sharesQuantity = (previousResult != null)
-                ? stockOperation.getQuantity() + previousResult.sharesQuantity()
-                : stockOperation.getQuantity();
+                ? stockMarketOperation.getQuantity() + previousResult.sharesQuantity()
+                : stockMarketOperation.getQuantity();
 
         Double weightedAverageCost = (previousResult != null)
-                ? (previousResult.weightedAverageCost() * previousResult.sharesQuantity() + stockOperation.getUnitCost() * stockOperation.getQuantity()) / sharesQuantity
-                : stockOperation.getUnitCost();
+                ? (previousResult.weightedAverageCost() * previousResult.sharesQuantity() + stockMarketOperation.getUnitCost() * stockMarketOperation.getQuantity()) / sharesQuantity
+                : stockMarketOperation.getUnitCost();
 
         return new OperationResult(
                 weightedAverageCost,
