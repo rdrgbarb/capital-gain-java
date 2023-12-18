@@ -24,7 +24,7 @@ hs_err_pid*
 */target/
 target/
 dependency-reduced-pom.xml
-testingInputLines.json
+testingInputLines.txt
 
 # IntelliJ project files 
 *.iml
