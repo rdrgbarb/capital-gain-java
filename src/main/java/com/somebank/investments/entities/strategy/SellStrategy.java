@@ -19,8 +19,8 @@ public class SellStrategy implements OperationStrategy {
         if (invalidPreviousResult(previousResult,stockMarketOperation)) {
             throw new InvalidPreviousResultException();
         }
-        this.unitCost = stockMarketOperation.getUnitCost();
-        this.quantity = stockMarketOperation.getQuantity();
+        this.unitCost = stockMarketOperation.unitCost();
+        this.quantity = stockMarketOperation.quantity();
         this.totalCost = quantity * unitCost;
         this.weightedAverageCost = previousResult.weightedAverageCost();
         this.previousFinancialLoss = previousResult.financialLoss();
@@ -36,7 +36,7 @@ public class SellStrategy implements OperationStrategy {
     }
 
     private boolean invalidPreviousResult(OperationResult previousResult, StockMarketOperation stockMarketOperation) {
-        return previousResult==null || stockMarketOperation.getQuantity() > previousResult.sharesQuantity();
+        return previousResult==null || stockMarketOperation.quantity() > previousResult.sharesQuantity();
     }
 
     private Double calculateTax() {

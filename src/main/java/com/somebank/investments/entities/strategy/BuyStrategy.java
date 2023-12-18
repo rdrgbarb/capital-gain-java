@@ -7,12 +7,12 @@ public class BuyStrategy implements OperationStrategy {
     @Override
     public OperationResult calculate(OperationResult previousResult, StockMarketOperation stockMarketOperation) {
         int sharesQuantity = (previousResult != null)
-                ? stockMarketOperation.getQuantity() + previousResult.sharesQuantity()
-                : stockMarketOperation.getQuantity();
+                ? stockMarketOperation.quantity() + previousResult.sharesQuantity()
+                : stockMarketOperation.quantity();
 
         Double weightedAverageCost = (previousResult != null)
-                ? (previousResult.weightedAverageCost() * previousResult.sharesQuantity() + stockMarketOperation.getUnitCost() * stockMarketOperation.getQuantity()) / sharesQuantity
-                : stockMarketOperation.getUnitCost();
+                ? (previousResult.weightedAverageCost() * previousResult.sharesQuantity() + stockMarketOperation.unitCost() * stockMarketOperation.quantity()) / sharesQuantity
+                : stockMarketOperation.unitCost();
 
         return new OperationResult(
                 weightedAverageCost,
